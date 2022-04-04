@@ -2,7 +2,7 @@ import base64
 
 import streamlit as st
 
-from fetch_picks import get_name, get_picks
+from fetch_picks import get_name, get_picks, get_matchups
 
 st.set_page_config(
     page_title="Tournament Challenge Picks", layout="wide", page_icon="basketball"
@@ -42,3 +42,9 @@ data = base64.b64encode(picks.to_csv(index=False).encode()).decode()
 st.download_button(
     data=picks.to_csv().encode("utf-8"), label="Download as csv", file_name="picks.csv"
 )
+
+"## Matchups"
+
+matchups = get_matchups()
+
+matchups

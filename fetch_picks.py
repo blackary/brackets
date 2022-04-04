@@ -4,18 +4,6 @@ import pandas as pd
 
 import requests
 
-headers = {
-    "authority": "fantasy.espncdn.com",
-    "accept": "*/*",
-    "sec-gpc": "1",
-    "origin": "https://fantasy.espn.com",
-    "sec-fetch-site": "cross-site",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-dest": "empty",
-    "referer": "https://fantasy.espn.com/",
-    "accept-language": "en-US,en;q=0.9",
-}
-
 
 def _get_data(group_id: str) -> Dict:
     params = {
@@ -26,7 +14,6 @@ def _get_data(group_id: str) -> Dict:
 
     response = requests.get(
         "https://fantasy.espncdn.com/tournament-challenge-bracket/2022/en/api/v7/group",
-        headers=headers,
         params=params,
     )
 
@@ -63,3 +50,22 @@ def get_picks(group_id: str) -> pd.DataFrame:
     df = pd.DataFrame(all_picks).sort_values("points", ascending=False)
 
     return df
+
+
+def get_matchups() -> pd.DataFrame:
+    url = (
+        "https://fantasy.espncdn.com/tournament-challenge-bracket/2022/en/api/matchups"
+    )
+
+    data = requests.get(url).json()
+
+    matchups = []
+
+    for row in data["m"]:
+        team1, team2 = row["o"]
+        team1["n"]
+        team2["n"]
+
+        matchups.append({"team 1": team1["n"], "team 2": team2["n"]})
+
+    return pd.DataFrame(matchups)
