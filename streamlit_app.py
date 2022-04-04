@@ -10,13 +10,22 @@ st.title("Get picks in a usable format")
 
 "Paste in group id or url (e.g. https://fantasy.espn.com/tournament-challenge-bracket/2022/en/group?groupID=...)"
 
-url = st.text_input("Group url / group id")
+params = st.experimental_get_query_params()
+
+if "group_id" in params:
+    group_id = params["group_id"][0]
+else:
+    group_id = ""
+
+url = st.text_input("Group url / group id", value=group_id)
 
 if not url:
     st.info("Put in url or group id")
     st.stop()
 
 group_id = url.split("=")[-1] # may or may not be right
+
+st.experimental_set_query_params(group_id=group_id)
 
 picks = get_picks(group_id)
 
