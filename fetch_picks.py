@@ -41,8 +41,9 @@ def get_picks(group_id: str) -> pd.DataFrame:
 
     for bracket in brackets:
         name = bracket["n_e"]
+        owner = bracket["n_m"]
         picks = bracket["ps"]
-        row = {"name": name}
+        row = {"name": name, "owner": owner}
         for idx, pick in enumerate(picks.split("|")):
             key = f"pick {idx}"
             row[key] = int(pick)
