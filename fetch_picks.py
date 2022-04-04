@@ -1,5 +1,8 @@
-import requests
+from typing import Dict
+
 import pandas as pd
+
+import requests
 
 headers = {
     'authority': 'fantasy.espncdn.com',
@@ -13,7 +16,7 @@ headers = {
     'accept-language': 'en-US,en;q=0.9',
 }
 
-def get_picks(group_id: str) -> pd.DataFrame:
+def _get_data(group_id: str) -> Dict:
     params = {
         'groupID': group_id,
         'start': '0',
@@ -22,7 +25,17 @@ def get_picks(group_id: str) -> pd.DataFrame:
 
     response = requests.get('https://fantasy.espncdn.com/tournament-challenge-bracket/2022/en/api/v7/group', headers=headers, params=params)
 
-    brackets = response.json()['g']['e']
+    return response.json()
+
+
+def get_name(group_id) -> str:
+    data = _get_data(group_id)
+    return data['g']['n']
+
+
+def get_picks(group_id: str) -> pd.DataFrame:
+    data = _get_data(group_id)
+    brackets = data['g']['e']
 
     all_picks = []
 

@@ -2,7 +2,7 @@ import base64
 
 import streamlit as st
 
-from fetch_picks import get_picks
+from fetch_picks import get_name, get_picks
 
 st.set_page_config(page_title="Tournament Challenge Picks", layout="wide", page_icon="basketball")
 
@@ -26,6 +26,10 @@ if not url:
 group_id = url.split("=")[-1] # may or may not be right
 
 st.experimental_set_query_params(group_id=group_id)
+
+name = get_name(group_id)
+
+f"## {name}"
 
 picks = get_picks(group_id)
 
