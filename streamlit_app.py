@@ -8,6 +8,8 @@ st.set_page_config(page_title="Tournament Challenge Picks", layout="wide", page_
 
 st.title("Get picks in a usable format")
 
+"Paste in group id or url (e.g. https://fantasy.espn.com/tournament-challenge-bracket/2022/en/group?groupID=...)"
+
 url = st.text_input("Group url / group id")
 
 if not url:
