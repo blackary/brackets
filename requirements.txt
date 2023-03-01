@@ -1,4 +1,3 @@
 streamlit>=1.19.0
-click==8.0.4
-pandas
+requests
 st-pages
