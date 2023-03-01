@@ -1,11 +1,12 @@
-from typing import Dict
+from __future__ import annotations
 
 import pandas as pd
+import streamlit as st
 
 import requests
 
 
-def _get_data(group_id: str) -> Dict:
+def _get_data(group_id: str) -> dict:
     params = {
         "groupID": group_id,
         "start": "0",
@@ -25,6 +26,7 @@ def get_name(group_id) -> str:
     return data["g"]["n"]
 
 
+@st.cache_data(ttl=60 * 60 * 24)
 def get_picks(group_id: str) -> pd.DataFrame:
     data = _get_data(group_id)
     brackets = data["g"]["e"]
@@ -52,12 +54,19 @@ def get_picks(group_id: str) -> pd.DataFrame:
     return df
 
 
-def get_matchups() -> pd.DataFrame:
+@st.cache_data(ttl=60 * 60 * 24)
+def _matchups():
     url = (
         "https://fantasy.espncdn.com/tournament-challenge-bracket/2022/en/api/matchups"
     )
 
     data = requests.get(url).json()
+
+    return data
+
+
+def get_matchups() -> pd.DataFrame:
+    data = _matchups()
 
     matchups = []
 
@@ -66,6 +75,22 @@ def get_matchups() -> pd.DataFrame:
         team1["n"]
         team2["n"]
 
-        matchups.append({"team 1": team1["n"], "team 2": team2["n"]})
+        game_id = row["id"]
+        matchups.append(
+            {"team_1": team1["n"], "team_2": team2["n"], "game_id": game_id}
+        )
 
-    return pd.DataFrame(matchups)
+    return pd.DataFrame(matchups).set_index("game_id").sort_index()
+
+
+def get_team_ids() -> dict[str, int]:
+    data = _matchups()
+
+    teams = {}
+
+    for row in data["m"]:
+        team1, team2 = row["o"]
+        teams[team1["n"]] = team1["id"]
+        teams[team2["n"]] = team2["id"]
+
+    return teams
