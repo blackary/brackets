@@ -6,7 +6,9 @@ import streamlit as st
 
 from fetch_picks import get_matchups, get_team_ids
 
-st.set_page_config("Make your picks", layout="wide")
+st.set_page_config("Pick your bracket", layout="wide", page_icon="🎯")
+
+st.title("🎯 Pick your bracket")
 
 matchups = get_matchups()[["team_1", "team_2"]]
 

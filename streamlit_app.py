@@ -1,12 +1,17 @@
 import base64
 
 import streamlit as st
+from st_pages import add_page_title, show_pages_from_config
 
-from fetch_picks import get_name, get_picks, get_matchups
+from fetch_picks import get_matchups, get_name, get_picks
 
 st.set_page_config(
     page_title="Tournament Challenge Picks", layout="wide", page_icon="basketball"
 )
+
+add_page_title()
+
+show_pages_from_config()
 
 st.title("Get picks in a usable format")
 
