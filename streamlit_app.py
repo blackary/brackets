@@ -22,7 +22,7 @@ params = st.experimental_get_query_params()
 if "group_id" in params:
     group_id = params["group_id"][0]
 else:
-    group_id = ""
+    group_id = "4337635"
 
 url = st.text_input("Group url / group id", value=group_id)
 
