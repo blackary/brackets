@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import pandas as pd
-import streamlit as st
-
 import requests
+import streamlit as st
 
 
 def _get_data(group_id: str) -> dict:
@@ -14,7 +13,8 @@ def _get_data(group_id: str) -> dict:
     }
 
     response = requests.get(
-        "https://fantasy.espncdn.com/tournament-challenge-bracket/2022/en/api/v7/group",
+        ""
+        "https://fantasy.espncdn.com/tournament-challenge-bracket/2023/en/api/v7/group",
         params=params,
     )
 
@@ -44,12 +44,18 @@ def get_picks(group_id: str) -> pd.DataFrame:
             "max_point": bracket["max"],
             "percentage": bracket["pct"],
         }
-        for idx, pick in enumerate(picks.split("|")):
-            key = f"pick {idx}"
-            row[key] = int(pick)
+        # Before the tournament starts, the picks == ""
+        if picks:
+            for idx, pick in enumerate(picks.split("|")):
+                key = f"pick {idx}"
+                row[key] = int(pick)
         all_picks.append(row)
 
-    df = pd.DataFrame(all_picks).sort_values("points", ascending=False)
+    df = pd.DataFrame(all_picks)
+    if df["points"].sum() == 0:
+        df = df.sort_values("name", ascending=True)
+    else:
+        df = df.sort_values("points", ascending=False)
 
     return df
 
@@ -57,12 +63,24 @@ def get_picks(group_id: str) -> pd.DataFrame:
 @st.cache_data(ttl=60 * 60 * 24)
 def _matchups():
     url = (
-        "https://fantasy.espncdn.com/tournament-challenge-bracket/2022/en/api/matchups"
+        "https://fantasy.espncdn.com/tournament-challenge-bracket/2023/en/api/matchups"
     )
 
     data = requests.get(url).json()
 
     return data
+
+
+@st.cache_data(ttl=60 * 60 * 24)
+def get_logos() -> dict[str, str]:
+    data = pd.read_csv("logos.csv")
+
+    logos = {}
+
+    for row in data.itertuples():
+        logos[row.name] = row.logo
+
+    return logos
 
 
 def get_matchups() -> pd.DataFrame:
@@ -71,7 +89,10 @@ def get_matchups() -> pd.DataFrame:
     matchups = []
 
     for row in data["m"]:
-        team1, team2 = row["o"]
+        try:
+            team1, team2 = row["o"]
+        except ValueError:
+            break
         team1["n"]
         team2["n"]
 
@@ -89,7 +110,10 @@ def get_team_ids() -> dict[str, int]:
     teams = {}
 
     for row in data["m"]:
-        team1, team2 = row["o"]
+        try:
+            team1, team2 = row["o"]
+        except ValueError:
+            break
         teams[team1["n"]] = team1["id"]
         teams[team2["n"]] = team2["id"]
 

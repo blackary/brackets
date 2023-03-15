@@ -15,14 +15,14 @@ show_pages_from_config()
 
 st.title("Get picks in a usable format")
 
-"Paste in group id or url (e.g. https://fantasy.espn.com/tournament-challenge-bracket/2022/en/group?groupID=...)"
+"Paste in group id or url (e.g. https://fantasy.espn.com/tournament-challenge-bracket/2023/en/group?groupID=5130209)"
 
 params = st.experimental_get_query_params()
 
 if "group_id" in params:
     group_id = params["group_id"][0]
 else:
-    group_id = "4337635"
+    group_id = "5130209"
 
 url = st.text_input("Group url / group id", value=group_id)
 

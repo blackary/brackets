@@ -133,4 +133,8 @@ picks_df = pd.DataFrame(rows).set_index("game_number")
 
 st.write(picks_df)
 
-st.download_button("Download your picks", picks_df.to_csv(), file_name="your_picks.csv")
+file_name = st.text_input("File name (.csv)", "your_picks")
+
+st.download_button(
+    "Download your picks", picks_df.to_csv(), file_name=f"{file_name}.csv"
+)
