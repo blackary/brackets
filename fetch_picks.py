@@ -26,7 +26,7 @@ def get_name(group_id) -> str:
     return data["g"]["n"]
 
 
-@st.cache_data(ttl=60 * 60 * 24)
+@st.cache_data(ttl=60 * 15)
 def get_picks(group_id: str) -> pd.DataFrame:
     data = _get_data(group_id)
     brackets = data["g"]["e"]
