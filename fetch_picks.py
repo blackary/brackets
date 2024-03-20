@@ -3,6 +3,9 @@ from __future__ import annotations
 import pandas as pd
 import requests
 import streamlit as st
+from datetime import date
+
+YEAR = date.today().year
 
 
 def _get_data(group_id: str) -> dict:
@@ -12,9 +15,11 @@ def _get_data(group_id: str) -> dict:
         "length": "10000",
     }
 
+    url = f"https://gambit-api.fantasy.espn.com/apis/v1/challenges/tournament-challenge-bracket-{YEAR}/groups/{group_id}?view=chui_default_group&platform=chui"
+    print(url)
     response = requests.get(
-        ""
-        "https://fantasy.espncdn.com/tournament-challenge-bracket/2023/en/api/v7/group",
+        url,
+        # f"https://fantasy.espncdn.com/tournament-challenge-bracket/{YEAR}/en/api/v7/group",
         params=params,
     )
 
@@ -23,20 +28,20 @@ def _get_data(group_id: str) -> dict:
 
 def get_name(group_id) -> str:
     data = _get_data(group_id)
-    return data["g"]["n"]
+    return data["groupSettings"]["name"]
 
 
 @st.cache_data(ttl=60 * 15)
 def get_picks(group_id: str) -> pd.DataFrame:
     data = _get_data(group_id)
-    brackets = data["g"]["e"]
+    brackets = data["entries"]
 
     all_picks = []
 
     for bracket in brackets:
-        name = bracket["n_e"]
-        owner = bracket["n_m"]
-        picks = bracket["ps"]
+        name = bracket["name"]
+        owner = bracket["member"]["displayName"]
+        picks = bracket["picks"]
         row = {
             "name": name,
             "owner": owner,
@@ -62,9 +67,7 @@ def get_picks(group_id: str) -> pd.DataFrame:
 
 @st.cache_data(ttl=60 * 60 * 24)
 def _matchups():
-    url = (
-        "https://fantasy.espncdn.com/tournament-challenge-bracket/2023/en/api/matchups"
-    )
+    url = f"https://fantasy.espncdn.com/tournament-challenge-bracket/{YEAR}/en/api/matchups"
 
     data = requests.get(url).json()
 
